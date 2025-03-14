@@ -8,14 +8,19 @@
 
 #define DHTPIN D10
 #define DHTTYPE DHT22
-
-// test
+#define RELAIS_TEMP D3
+#define RELAIS_HUM D4
 
 WiFiClient espClient;
 PubSubClient client(espClient);
 
 DHT dht(DHTPIN, DHTTYPE);
 
+bool started = false;
+
+int set_time;
+int set_temperature;
+int set_humidity;
 
 // Google Apps Script URL
 const String GOOGLE_APPS_SCRIPT_URL = "https://script.google.com/macros/s/";
@@ -105,19 +110,53 @@ void setup_wifi()
   Serial.println(WiFi.localIP());
 }
 
-void send_data_mqtt()
+void send_data_mqtt(int data)
 {
-  power = random(0, 600);
+
   char value[8];
-  dtostrf(power, 1, 2, value);
+  dtostrf(data, 1, 2, value);
   client.subscribe("value");
   // client.subscribe("testTopic");
-  client.publish("power", value);
+  client.publish("data", value);
 }
 
-void get_dht(){
-temp = dht.readTemperature();    
-hum = dht.readHumidity();
+void get_data_mqtt(){
+
+  client.subscribe("temperature");
+  client.subscribe("humidity");
+}
+
+void get_dht()
+{
+  temp = dht.readTemperature();
+  hum = dht.readHumidity();
+  Serial.println("temperature: ");
+  Serial.print(temp);
+
+  Serial.println("humidity: ");
+  Serial.print(hum);
+}
+
+void start_relais(int temperature, int humidity)
+{
+  get_dht();
+
+  if (temperature < temp)
+  {
+    digitalWrite(RELAIS_TEMP, HIGH);
+  }else{
+    digitalWrite(RELAIS_TEMP, LOW);
+  }
+  if(humidity < hum){
+    digitalWrite(RELAIS_HUM, HIGH);
+  }else{
+    digitalWrite(RELAIS_HUM, LOW);
+  }
+}
+
+
+void start_cycle(){
+  
 
 }
 
@@ -125,6 +164,9 @@ void setup()
 {
   Serial.begin(115200);
   setup_wifi();
+
+  pinMode(RELAIS_HUM, OUTPUT);
+  pinMode(RELAIS_TEMP, OUTPUT);
 
   // Setup MQTT
   client.setServer(mqtt_server, mqtt_port);
