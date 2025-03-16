@@ -22,6 +22,7 @@ int set_time;
 int set_temperature;
 int set_humidity;
 
+
 // Google Apps Script URL
 const String GOOGLE_APPS_SCRIPT_URL = "https://script.google.com/macros/s/";
 
@@ -67,6 +68,15 @@ void handleMessage(char *topic, byte *payload, unsigned int length)
     message += (char)payload[i];
   }
   Serial.println("Received message on topic [" + String(topic) + "]: " + message);
+  if (String(topic) == "temperatuur"){
+    set_temperature = message.toInt();
+  }else if(String(topic) == "humidity"){
+    set_humidity = message.toInt();
+  }else if(String(topic) == "tijd"){
+    set_time = message.toInt();
+  }else if(String(topic) == "start"){
+    started = message;
+  }
 }
 
 // MQTT reconnect function
@@ -79,6 +89,7 @@ void reconnect()
     {
       Serial.println("connected");
       client.subscribe("testTopic");
+      client.subscribe("temperatuur");
     }
     else
     {
