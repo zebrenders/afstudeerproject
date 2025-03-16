@@ -13,6 +13,8 @@
 
 unsigned long previousMillis = 0;
 const unsigned long interval = 5000;
+unsigned long previousMillisEnd = 0;
+unsigned long intervalEnd = 0;
 
 WiFiClient espClient;
 PubSubClient client(espClient);
@@ -214,9 +216,12 @@ void loop()
 
   if (started)
   {
+    intervalEnd = set_time * 1000;
+
     while (started)
     {
       unsigned long currentMillis = millis();
+
       if (currentMillis - previousMillis >= interval)
       {
         previousMillis = currentMillis;
@@ -227,6 +232,10 @@ void loop()
         Serial.println(set_humidity);
         Serial.print("tijd: ");
         Serial.println(set_time);
+      }
+      if (currentMillis - previousMillisEnd >= intervalEnd)
+      {
+        previousMillisEnd = currentMillis;
         started = false;
       }
     }
