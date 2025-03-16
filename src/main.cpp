@@ -11,6 +11,9 @@
 #define RELAIS_TEMP D3
 #define RELAIS_HUM D4
 
+unsigned long previousMillis = 0;
+const unsigned long interval = 5000;
+
 WiFiClient espClient;
 PubSubClient client(espClient);
 
@@ -21,7 +24,6 @@ bool started = false;
 int set_time;
 int set_temperature;
 int set_humidity;
-
 
 // Google Apps Script URL
 const String GOOGLE_APPS_SCRIPT_URL = "https://script.google.com/macros/s/";
@@ -59,26 +61,6 @@ void send_data_https()
   http.end();
 }
 
-// MQTT message handler
-void handleMessage(char *topic, byte *payload, unsigned int length)
-{
-  String message = "";
-  for (unsigned int i = 0; i < length; i++)
-  {
-    message += (char)payload[i];
-  }
-  Serial.println("Received message on topic [" + String(topic) + "]: " + message);
-  if (String(topic) == "temperatuur"){
-    set_temperature = message.toInt();
-  }else if(String(topic) == "humidity"){
-    set_humidity = message.toInt();
-  }else if(String(topic) == "tijd"){
-    set_time = message.toInt();
-  }else if(String(topic) == "start"){
-    started = message;
-  }
-}
-
 // MQTT reconnect function
 void reconnect()
 {
@@ -90,6 +72,9 @@ void reconnect()
       Serial.println("connected");
       client.subscribe("testTopic");
       client.subscribe("temperatuur");
+      client.subscribe("humidity");
+      client.subscribe("tijd");
+      client.subscribe("start");
     }
     else
     {
@@ -131,12 +116,6 @@ void send_data_mqtt(int data)
   client.publish("data", value);
 }
 
-void get_data_mqtt(){
-
-  client.subscribe("temperature");
-  client.subscribe("humidity");
-}
-
 void get_dht()
 {
   temp = dht.readTemperature();
@@ -155,20 +134,59 @@ void start_relais(int temperature, int humidity)
   if (temperature < temp)
   {
     digitalWrite(RELAIS_TEMP, HIGH);
-  }else{
+  }
+  else
+  {
     digitalWrite(RELAIS_TEMP, LOW);
   }
-  if(humidity < hum){
+  if (humidity < hum)
+  {
     digitalWrite(RELAIS_HUM, HIGH);
-  }else{
+  }
+  else
+  {
     digitalWrite(RELAIS_HUM, LOW);
   }
 }
 
+void start_cycle()
+{
+}
 
-void start_cycle(){
-  
+// MQTT message handler
+void handleMessage(char *topic, byte *payload, unsigned int length)
+{
 
+  String message = "";
+  for (unsigned int i = 0; i < length; i++)
+  {
+    message += (char)payload[i];
+  }
+  Serial.println("Received message on topic [" + String(topic) + "]: " + message);
+
+  if (String(topic) == "temperatuur")
+  {
+    set_temperature = message.toInt();
+  }
+  if (String(topic) == "humidity")
+  {
+    set_humidity = message.toInt();
+  }
+  if (String(topic) == "tijd")
+  {
+    set_time = message.toInt();
+  }
+  if (String(topic) == "start")
+  {
+    started = message;
+  }
+  if (String(topic) == "testTopic")
+  {
+    String i = message;
+    set_temperature = (i.substring(0, 2)).toInt();
+    set_humidity = (i.substring(2, 4)).toInt();
+    set_time = (i.substring(4, 6)).toInt();
+  }
 }
 
 void setup()
@@ -193,4 +211,24 @@ void loop()
     reconnect();
   }
   client.loop();
+
+  if (started)
+  {
+    while (started)
+    {
+      unsigned long currentMillis = millis();
+      if (currentMillis - previousMillis >= interval)
+      {
+        previousMillis = currentMillis;
+
+        Serial.print("temperature: ");
+        Serial.println(set_temperature);
+        Serial.print("humidity: ");
+        Serial.println(set_humidity);
+        Serial.print("tijd: ");
+        Serial.println(set_time);
+        started = false;
+      }
+    }
+  }
 }
