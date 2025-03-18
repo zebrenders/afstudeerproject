@@ -167,14 +167,12 @@ void start_cycle()
 {
   if (started)
   {
-    intervalEnd = set_time * 1000;
+    intervalEnd = set_time * 60000;
 
-    Serial.print("temperature: ");
-    Serial.println(set_min_temp);
-    Serial.print("humidity: ");
-    Serial.println(set_min_hum);
-    Serial.print("tijd: ");
-    Serial.println(set_time);
+    Serial.println("temperature: " && set_min_temp && "°C - " && set_max_temp && "°C");
+    Serial.println("humidity: " && set_min_hum && "% - " && set_max_hum && "%");
+    Serial.println("tijd: " && set_time && "min.");
+
 
     while (started)
     {
@@ -263,4 +261,6 @@ void loop()
     reconnect();
   }
   client.loop();
+
+  start_cycle();
 }
