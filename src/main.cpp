@@ -10,6 +10,7 @@
 #define DHTTYPE DHT22
 #define RELAIS_TEMP D3
 #define RELAIS_HUM D4
+#define RELAIS_FANS D6
 
 unsigned long previousMillis = 0;
 const unsigned long interval = 5000;
@@ -24,8 +25,10 @@ DHT dht(DHTPIN, DHTTYPE);
 bool started = false;
 
 int set_time;
-int set_temperature;
-int set_humidity;
+int set_min_temp;
+int set_min_hum;
+int set_max_temp;
+int set_max_hum;
 
 // Google Apps Script URL
 const String GOOGLE_APPS_SCRIPT_URL = "https://script.google.com/macros/s/";
@@ -127,13 +130,15 @@ void get_dht()
 
   Serial.println("humidity: ");
   Serial.print(hum);
+
+  send_data_https();
 }
 
-void start_relais(int temperature, int humidity)
+void start_relais()
 {
   get_dht();
 
-  if (temperature < temp)
+  if (temp < set_min_temp)
   {
     digitalWrite(RELAIS_TEMP, HIGH);
   }
@@ -141,18 +146,62 @@ void start_relais(int temperature, int humidity)
   {
     digitalWrite(RELAIS_TEMP, LOW);
   }
-  if (humidity < hum)
+  if (hum < set_min_hum)
   {
     digitalWrite(RELAIS_HUM, HIGH);
+    digitalWrite(RELAIS_FANS, LOW);
+  }
+  else if (hum > set_max_hum)
+  {
+    digitalWrite(RELAIS_HUM, LOW);
+    digitalWrite(RELAIS_FANS, HIGH);
   }
   else
   {
     digitalWrite(RELAIS_HUM, LOW);
+    digitalWrite(RELAIS_FANS, LOW);
   }
 }
 
 void start_cycle()
 {
+  if (started)
+  {
+    intervalEnd = set_time * 1000;
+
+    Serial.print("temperature: ");
+    Serial.println(set_min_temp);
+    Serial.print("humidity: ");
+    Serial.println(set_min_hum);
+    Serial.print("tijd: ");
+    Serial.println(set_time);
+
+    while (started)
+    {
+
+      // Handle MQTT connection
+      if (!client.connected())
+      {
+        reconnect();
+      }
+      client.loop();
+
+      unsigned long currentMillis = millis();
+
+      if (currentMillis - previousMillis >= interval)
+      {
+        previousMillis = currentMillis;
+
+        get_dht();
+        start_relais();
+      }
+      if (currentMillis - previousMillisEnd >= intervalEnd)
+      {
+        previousMillisEnd = currentMillis;
+        started = false;
+      }
+    }
+  }
 }
 
 // MQTT message handler
@@ -168,11 +217,11 @@ void handleMessage(char *topic, byte *payload, unsigned int length)
 
   if (String(topic) == "temperatuur")
   {
-    set_temperature = message.toInt();
+    set_min_temp = message.toInt();
   }
   if (String(topic) == "humidity")
   {
-    set_humidity = message.toInt();
+    set_min_hum = message.toInt();
   }
   if (String(topic) == "tijd")
   {
@@ -185,8 +234,8 @@ void handleMessage(char *topic, byte *payload, unsigned int length)
   if (String(topic) == "testTopic")
   {
     String i = message;
-    set_temperature = (i.substring(0, 2)).toInt();
-    set_humidity = (i.substring(2, 4)).toInt();
+    set_min_temp = (i.substring(0, 2)).toInt();
+    set_min_hum = (i.substring(2, 4)).toInt();
     set_time = (i.substring(4, 6)).toInt();
   }
 }
@@ -198,6 +247,7 @@ void setup()
 
   pinMode(RELAIS_HUM, OUTPUT);
   pinMode(RELAIS_TEMP, OUTPUT);
+  pinMode(RELAIS_FANS, OUTPUT);
 
   // Setup MQTT
   client.setServer(mqtt_server, mqtt_port);
@@ -213,31 +263,4 @@ void loop()
     reconnect();
   }
   client.loop();
-
-  if (started)
-  {
-    intervalEnd = set_time * 1000;
-
-    while (started)
-    {
-      unsigned long currentMillis = millis();
-
-      if (currentMillis - previousMillis >= interval)
-      {
-        previousMillis = currentMillis;
-
-        Serial.print("temperature: ");
-        Serial.println(set_temperature);
-        Serial.print("humidity: ");
-        Serial.println(set_humidity);
-        Serial.print("tijd: ");
-        Serial.println(set_time);
-      }
-      if (currentMillis - previousMillisEnd >= intervalEnd)
-      {
-        previousMillisEnd = currentMillis;
-        started = false;
-      }
-    }
-  }
 }
