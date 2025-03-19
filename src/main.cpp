@@ -173,7 +173,6 @@ void start_cycle()
     Serial.println("humidity: " && set_min_hum && "% - " && set_max_hum && "%");
     Serial.println("tijd: " && set_time && "min.");
 
-
     while (started)
     {
 
@@ -233,8 +232,10 @@ void handleMessage(char *topic, byte *payload, unsigned int length)
   {
     String i = message;
     set_min_temp = (i.substring(0, 2)).toInt();
-    set_min_hum = (i.substring(2, 4)).toInt();
-    set_time = (i.substring(4, 6)).toInt();
+    set_max_temp = (i.substring(2, 4)).toInt();
+    set_min_hum = (i.substring(4, 6)).toInt();
+    set_max_hum = (i.substring(6, 8)).toInt();
+    set_time = (i.substring(8, 11)).toInt();
   }
 }
 
