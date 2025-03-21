@@ -45,8 +45,8 @@ void send_data_https()
   // Create URL with parameters to call Google Apps Script
   String urlFinal = GOOGLE_APPS_SCRIPT_URL + GOOGLE_SCRIPT_MACRO_ID + "/exec?tijdstip=" + String(requestCounter) + "&temperatuur=" + String(temp) + "&humidity=" + String(hum);
 
-  Serial.print("POST data to spreadsheet: ");
-  Serial.println(urlFinal);
+  // Serial.print("POST data to spreadsheet: ");
+  // Serial.println(urlFinal);
 
   // Send HTTP request
   HTTPClient http;
@@ -61,7 +61,7 @@ void send_data_https()
   if (httpCode > 0)
   {
     payload = http.getString();
-    Serial.println("Payload: " + payload);
+    // Serial.println("Payload: " + payload);
   }
   http.end();
 }
@@ -80,6 +80,9 @@ void reconnect()
       client.subscribe("humidity");
       client.subscribe("tijd");
       client.subscribe("start");
+      client.subscribe("stop");
+      client.subscribe("maxTemperatuur");
+      client.subscribe("maxHumidity");
     }
     else
     {
@@ -125,11 +128,14 @@ void get_dht()
 {
   temp = dht.readTemperature();
   hum = dht.readHumidity();
-  Serial.println("temperature: ");
-  Serial.print(temp);
+  Serial.print("temperature: ");
+  Serial.println(temp);
 
-  Serial.println("humidity: ");
-  Serial.print(hum);
+  Serial.print("humidity: ");
+  Serial.println(hum);
+
+  temp = 20;
+  hum = 30;
 
   send_data_https();
 }
@@ -141,25 +147,31 @@ void start_relais()
   if (temp < set_min_temp)
   {
     digitalWrite(RELAIS_TEMP, HIGH);
+    Serial.println("relais temp on");
   }
   else
   {
     digitalWrite(RELAIS_TEMP, LOW);
+    Serial.println("relais temp off");
   }
   if (hum < set_min_hum)
   {
     digitalWrite(RELAIS_HUM, HIGH);
     digitalWrite(RELAIS_FANS, LOW);
+    Serial.println("relais hum on");
   }
+
   else if (hum > set_max_hum)
   {
     digitalWrite(RELAIS_HUM, LOW);
     digitalWrite(RELAIS_FANS, HIGH);
+    Serial.println("relais hum off");
   }
   else
   {
     digitalWrite(RELAIS_HUM, LOW);
     digitalWrite(RELAIS_FANS, LOW);
+    Serial.println("relais hum off 2");
   }
 }
 
@@ -169,9 +181,16 @@ void start_cycle()
   {
     intervalEnd = set_time * 60000;
 
-    Serial.println("temperature: " && set_min_temp && "°C - " && set_max_temp && "°C");
-    Serial.println("humidity: " && set_min_hum && "% - " && set_max_hum && "%");
-    Serial.println("tijd: " && set_time && "min.");
+    Serial.print("min temperature: ");
+    Serial.println(set_min_temp);
+    Serial.print("max temperature: ");
+    Serial.println(set_max_temp);
+    Serial.print("min humidity: ");
+    Serial.println(set_min_hum);
+    Serial.print("max humidity: ");
+    Serial.println(set_max_hum);
+    Serial.print("tijd: ");
+    Serial.println(set_time);
 
     while (started)
     {
@@ -219,6 +238,14 @@ void handleMessage(char *topic, byte *payload, unsigned int length)
   if (String(topic) == "humidity")
   {
     set_min_hum = message.toInt();
+  }
+  if (String(topic) == "maxHumidity")
+  {
+    set_max_hum = message.toInt();
+  }
+  if (String(topic) == "maxTemperatuur")
+  {
+    set_max_temp = message.toInt();
   }
   if (String(topic) == "tijd")
   {
