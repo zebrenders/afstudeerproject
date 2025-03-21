@@ -255,6 +255,10 @@ void handleMessage(char *topic, byte *payload, unsigned int length)
   {
     started = message;
   }
+  if (String(topic) == "stop")
+  {
+    started = message;
+  }
   if (String(topic) == "testTopic")
   {
     String i = message;
