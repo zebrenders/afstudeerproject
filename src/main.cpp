@@ -41,7 +41,7 @@ int power;
 
 void send_data_https()
 {
-
+  requestCounter += 1;
   // Create URL with parameters to call Google Apps Script
   String urlFinal = GOOGLE_APPS_SCRIPT_URL + GOOGLE_SCRIPT_MACRO_ID + "/exec?tijdstip=" + String(requestCounter) + "&temperatuur=" + String(temp) + "&humidity=" + String(hum);
 
