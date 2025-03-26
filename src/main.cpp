@@ -279,6 +279,8 @@ void setup()
   pinMode(RELAIS_TEMP, OUTPUT);
   pinMode(RELAIS_FANS, OUTPUT);
 
+  dht.begin();
+
   // Setup MQTT
   client.setServer(mqtt_server, mqtt_port);
   client.setCallback(handleMessage);
