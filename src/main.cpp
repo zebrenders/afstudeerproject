@@ -3,11 +3,11 @@
 #include <AsyncTCP.h>
 #include <PubSubClient.h>
 #include "HTTPClient.h"
-#include <DHT.h>
+#include <DHTesp.h>
 #include <secrets.h>
 
-#define DHTPIN D10
-#define DHTTYPE DHT22
+int pinDHT = D3;
+
 #define RELAIS_TEMP D3
 #define RELAIS_HUM D4
 #define RELAIS_FANS D6
@@ -20,7 +20,7 @@ unsigned long intervalEnd = 0;
 WiFiClient espClient;
 PubSubClient client(espClient);
 
-DHT dht(DHTPIN, DHTTYPE);
+DHTesp dht;
 
 bool started = false;
 
@@ -69,6 +69,7 @@ void send_data_https()
 // MQTT reconnect function
 void reconnect()
 {
+  int i = 0;
   while (!client.connected())
   {
     Serial.print("Attempting MQTT connection...");
@@ -86,7 +87,13 @@ void reconnect()
     }
     else
     {
-      Serial.println("failed, rc=" + String(client.state()) + " retrying in 5 seconds");
+      i += 1;
+      if (i > 5){
+        Serial.println("reconnection failed");
+        break;
+      }
+      Serial.println(i);
+        Serial.println("failed, rc=" + String(client.state()) + " retrying in 5 seconds");
       delay(5000);
     }
   }
@@ -126,16 +133,17 @@ void send_data_mqtt(int data)
 
 void get_dht()
 {
-  temp = dht.readTemperature();
-  hum = dht.readHumidity();
+  TempAndHumidity data = dht.getTempAndHumidity();
+  temp = data.temperature;
+  hum = data.humidity;
   Serial.print("temperature: ");
   Serial.println(temp);
 
   Serial.print("humidity: ");
   Serial.println(hum);
 
-  temp = 20;
-  hum = 30;
+  // temp = 20;
+  // hum = 30;
 
   send_data_https();
 }
@@ -279,7 +287,7 @@ void setup()
   pinMode(RELAIS_TEMP, OUTPUT);
   pinMode(RELAIS_FANS, OUTPUT);
 
-  dht.begin();
+  dht.setup(pinDHT, DHTesp::DHT11);
 
   // Setup MQTT
   client.setServer(mqtt_server, mqtt_port);
