@@ -6,11 +6,11 @@
 #include <DHTesp.h>
 #include <secrets.h>
 
-int pinDHT = D3;
+#define pinDHT D3
 
-#define RELAIS_TEMP D3
-#define RELAIS_HUM D4
-#define RELAIS_FANS D6
+#define RELAIS_TEMP D6
+#define ATOMIZER D7
+#define RELAIS_FANS D5
 
 unsigned long previousMillis = 0;
 const unsigned long interval = 5000;
@@ -164,20 +164,20 @@ void start_relais()
   }
   if (hum < set_min_hum)
   {
-    digitalWrite(RELAIS_HUM, HIGH);
+    digitalWrite(ATOMIZER, HIGH);
     digitalWrite(RELAIS_FANS, LOW);
     Serial.println("relais hum on");
   }
 
   else if (hum > set_max_hum)
   {
-    digitalWrite(RELAIS_HUM, LOW);
+    digitalWrite(ATOMIZER, LOW);
     digitalWrite(RELAIS_FANS, HIGH);
     Serial.println("relais hum off");
   }
   else
   {
-    digitalWrite(RELAIS_HUM, LOW);
+    digitalWrite(ATOMIZER, LOW);
     digitalWrite(RELAIS_FANS, LOW);
     Serial.println("relais hum off 2");
   }
@@ -283,7 +283,7 @@ void setup()
   Serial.begin(115200);
   setup_wifi();
 
-  pinMode(RELAIS_HUM, OUTPUT);
+  pinMode(ATOMIZER, OUTPUT);
   pinMode(RELAIS_TEMP, OUTPUT);
   pinMode(RELAIS_FANS, OUTPUT);
 
