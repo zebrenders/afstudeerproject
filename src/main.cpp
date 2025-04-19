@@ -200,7 +200,7 @@ void start_cycle()
     Serial.print("tijd: ");
     Serial.println(set_time);
 
-    while (started)
+    while (started == true)
     {
 
       // Handle MQTT connection
@@ -218,10 +218,12 @@ void start_cycle()
 
         get_dht();
         start_relais();
+        Serial.println(currentMillis- previousMillisEnd);
       }
       if (currentMillis - previousMillisEnd >= intervalEnd)
       {
         previousMillisEnd = currentMillis;
+        Serial.println("done");
         started = false;
       }
     }
