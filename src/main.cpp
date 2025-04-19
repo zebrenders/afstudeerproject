@@ -8,9 +8,9 @@
 
 #define pinDHT D3
 
-#define RELAIS_TEMP D7
-#define ATOMIZER D5
-#define RELAIS_FANS D6
+#define RELAIS_TEMP D6
+#define ATOMIZER D7
+#define RELAIS_FANS D5
 
 unsigned long previousMillis = 0;
 const unsigned long interval = 5000;
@@ -168,7 +168,6 @@ void start_relais()
     digitalWrite(RELAIS_FANS, LOW);
     Serial.println("relais hum on");
   }
-
   else if (hum > set_max_hum)
   {
     digitalWrite(ATOMIZER, LOW);
@@ -224,6 +223,9 @@ void start_cycle()
       {
         previousMillisEnd = currentMillis;
         Serial.println("done");
+        digitalWrite(ATOMIZER, LOW);
+        digitalWrite(RELAIS_FANS, LOW);
+        digitalWrite(RELAIS_TEMP, LOW);
         started = false;
       }
     }
