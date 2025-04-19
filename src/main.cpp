@@ -8,9 +8,9 @@
 
 #define pinDHT D3
 
-#define RELAIS_TEMP D6
-#define ATOMIZER D7
-#define RELAIS_FANS D5
+#define RELAIS_TEMP D7
+#define ATOMIZER D5
+#define RELAIS_FANS D6
 
 unsigned long previousMillis = 0;
 const unsigned long interval = 5000;
