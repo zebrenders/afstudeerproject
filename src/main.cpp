@@ -5,12 +5,19 @@
 #include "HTTPClient.h"
 #include <DHTesp.h>
 #include <secrets.h>
+#include <Adafruit_SSD1306.h>
+#include <Adafruit_Sensor.h>
 
 #define pinDHT D3
 
 #define RELAIS_TEMP D6
 #define ATOMIZER D7
 #define RELAIS_FANS D5
+
+#define SCREEN_WIDTH 128
+#define SCREEN_HEIGHT 64
+
+Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, -1);
 
 unsigned long previousMillis = 0;
 const unsigned long interval = 5000;
@@ -88,12 +95,13 @@ void reconnect()
     else
     {
       i += 1;
-      if (i > 5){
+      if (i > 5)
+      {
         Serial.println("reconnection failed");
         break;
       }
       Serial.println(i);
-        Serial.println("failed, rc=" + String(client.state()) + " retrying in 5 seconds");
+      Serial.println("failed, rc=" + String(client.state()) + " retrying in 5 seconds");
       delay(5000);
     }
   }
@@ -131,6 +139,37 @@ void send_data_mqtt(int data)
   client.publish("data", value);
 }
 
+void set_display(int t, int h)
+{
+
+  display.clearDisplay();
+
+  // display temperature
+  display.setTextSize(1);
+  display.setCursor(0, 0);
+  display.print("Temperature: ");
+  display.setTextSize(2);
+  display.setCursor(0, 10);
+  display.print(t);
+  display.print(" ");
+  display.setTextSize(1);
+  display.cp437(true);
+  display.write(167);
+  display.setTextSize(2);
+  display.print("C");
+
+  // display humidity
+  display.setTextSize(1);
+  display.setCursor(0, 35);
+  display.print("Humidity: ");
+  display.setTextSize(2);
+  display.setCursor(0, 45);
+  display.print(h);
+  display.print(" %");
+
+  display.display();
+}
+
 void get_dht()
 {
   TempAndHumidity data = dht.getTempAndHumidity();
@@ -142,9 +181,8 @@ void get_dht()
   Serial.print("humidity: ");
   Serial.println(hum);
 
-  // temp = 20;
-  // hum = 30;
 
+  set_display(temp, hum);
   send_data_https();
 }
 
@@ -217,7 +255,7 @@ void start_cycle()
 
         get_dht();
         start_relais();
-        Serial.println(currentMillis- previousMillisEnd);
+        Serial.println(currentMillis - previousMillisEnd);
       }
       if (currentMillis - previousMillisEnd >= intervalEnd)
       {
@@ -292,6 +330,15 @@ void setup()
   pinMode(RELAIS_FANS, OUTPUT);
 
   dht.setup(pinDHT, DHTesp::DHT11);
+
+  if (!display.begin(SSD1306_SWITCHCAPVCC, 0x3C))
+  {
+    Serial.println(F("SSD1306 allocation failed"));
+    for (;;)
+      ;
+  }
+  display.clearDisplay();
+  display.setTextColor(WHITE);
 
   // Setup MQTT
   client.setServer(mqtt_server, mqtt_port);
