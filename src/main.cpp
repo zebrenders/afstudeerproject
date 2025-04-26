@@ -181,7 +181,6 @@ void get_dht()
   Serial.print("humidity: ");
   Serial.println(hum);
 
-
   set_display(temp, hum);
   send_data_https();
 }
@@ -264,6 +263,18 @@ void start_cycle()
         digitalWrite(ATOMIZER, LOW);
         digitalWrite(RELAIS_FANS, LOW);
         digitalWrite(RELAIS_TEMP, LOW);
+
+        display.clearDisplay();
+
+        // display temperature
+        display.setTextSize(1);
+        display.setCursor(0, 0);
+        display.print("done");
+        display.setTextSize(2);
+        display.setCursor(0, 10);
+
+
+        display.display();
         started = false;
       }
     }
