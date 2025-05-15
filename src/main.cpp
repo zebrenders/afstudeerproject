@@ -295,6 +295,14 @@ void handleMessage(char *topic, byte *payload, unsigned int length)
     message += (char)payload[i];
   }
   Serial.println("Received message on topic [" + String(topic) + "]: " + message);
+  display.clearDisplay();
+  display.setTextSize(1);
+  display.setCursor(0, 0);
+  display.print("Received message on topic");
+  display.setTextSize(1);
+  display.setCursor(0, 10);
+  display.print("[" + String(topic) + "]: " + message);
+  display.display();
 
   if (String(topic) == "temperatuur")
   {
