@@ -236,9 +236,17 @@ void start_cycle()
     Serial.print("tijd: ");
     Serial.println(set_time);
 
+    if (started)
+    {
+      display.clearDisplay();
+      display.setTextSize(3);
+      display.setCursor(0, 0);
+      display.print("Program Started");
+
+      display.display();
+    }
     while (started == true)
     {
-
       // Handle MQTT connection
       if (!client.connected())
       {
@@ -265,15 +273,11 @@ void start_cycle()
         digitalWrite(RELAIS_TEMP, LOW);
 
         display.clearDisplay();
-
-        // display temperature
-        display.setTextSize(1);
+        display.setTextSize(3);
         display.setCursor(0, 0);
         display.print("done");
         display.setTextSize(2);
         display.setCursor(0, 10);
-
-
         display.display();
         started = false;
       }
