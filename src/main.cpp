@@ -156,7 +156,7 @@ void set_display(int t, int h)
   display.setTextSize(1);
   display.cp437(true);
   display.write(167);
-  display.setTextSize(2);
+  display.setTextSize(1);
   display.print("C");
 
   // display humidity
@@ -249,10 +249,9 @@ void start_cycle()
     if (started)
     {
       unsigned long currentMillis = millis();
-      previousMillis = currentMillis;
       previousMillisEnd = currentMillis;
       display.clearDisplay();
-      display.setTextSize(3);
+      display.setTextSize(2);
       display.setCursor(0, 0);
       display.print("Program Started");
 
@@ -321,10 +320,13 @@ void handleMessage(char *topic, byte *payload, unsigned int length)
   Serial.println("Received message on topic [" + String(topic) + "]: " + message);
   display.clearDisplay();
   display.setTextSize(1);
-  display.setCursor(0, 0);
-  display.print("Received message on topic");
+  display.setCursor(0, 20);
+  display.print("Received message");
   display.setTextSize(1);
-  display.setCursor(0, 10);
+  display.setCursor(0, 30);
+  display.print("on topic");
+  display.setTextSize(1);
+  display.setCursor(0, 40);
   display.print("[" + String(topic) + "]: " + message);
   display.display();
 
