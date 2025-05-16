@@ -31,6 +31,7 @@ DHTesp dht;
 
 bool started = false;
 
+float progress;
 int set_time;
 int set_min_temp;
 int set_min_hum;
@@ -148,7 +149,7 @@ void set_display(int t, int h)
   display.setTextSize(1);
   display.setCursor(0, 0);
   display.print("Temperature: ");
-  display.setTextSize(2);
+  display.setTextSize(1);
   display.setCursor(0, 10);
   display.print(t);
   display.print(" ");
@@ -160,11 +161,20 @@ void set_display(int t, int h)
 
   // display humidity
   display.setTextSize(1);
-  display.setCursor(0, 35);
+  display.setCursor(0, 20);
   display.print("Humidity: ");
-  display.setTextSize(2);
-  display.setCursor(0, 45);
+  display.setTextSize(1);
+  display.setCursor(0, 30);
   display.print(h);
+  display.print(" %");
+
+
+    display.setTextSize(1);
+  display.setCursor(0, 40);
+  display.print("progress: ");
+  display.setTextSize(1);
+  display.setCursor(0, 50);
+  display.print(progress);
   display.print(" %");
 
   display.display();
@@ -247,6 +257,7 @@ void start_cycle()
     }
     while (started == true)
     {
+    
       // Handle MQTT connection
       if (!client.connected())
       {
@@ -256,13 +267,22 @@ void start_cycle()
 
       unsigned long currentMillis = millis();
 
+      progress = (currentMillis - previousMillisEnd);
+      Serial.println(progress);
+      progress /= 60000;
+      Serial.println(progress);
+      progress *= 100;
+      Serial.println(progress);
+      progress /= set_time;
+      Serial.println(progress);
+
       if (currentMillis - previousMillis >= interval)
       {
         previousMillis = currentMillis;
 
         get_dht();
         start_relais();
-        Serial.println(currentMillis - previousMillisEnd);
+        
       }
       if (currentMillis - previousMillisEnd >= intervalEnd)
       {
@@ -294,6 +314,7 @@ void handleMessage(char *topic, byte *payload, unsigned int length)
   {
     message += (char)payload[i];
   }
+  display.clearDisplay();
   Serial.println("Received message on topic [" + String(topic) + "]: " + message);
   display.clearDisplay();
   display.setTextSize(1);
