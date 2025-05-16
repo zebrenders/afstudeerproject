@@ -248,6 +248,9 @@ void start_cycle()
 
     if (started)
     {
+      unsigned long currentMillis = millis();
+      previousMillis = currentMillis;
+      previousMillisEnd = currentMillis;
       display.clearDisplay();
       display.setTextSize(3);
       display.setCursor(0, 0);
