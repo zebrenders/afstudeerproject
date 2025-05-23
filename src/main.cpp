@@ -341,7 +341,7 @@ void handleMessage(char *topic, byte *payload, unsigned int length)
   if (String(topic) == "maxHumidity")
   {
     set_max_hum = message.toInt();
-  }
+  } 
   if (String(topic) == "maxTemperatuur")
   {
     set_max_temp = message.toInt();
