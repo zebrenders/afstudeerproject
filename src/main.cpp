@@ -1,5 +1,5 @@
 #include <Arduino.h>
-#include <WiFi.h>
+#include <WiFiManager.h>
 #include <AsyncTCP.h>
 #include <PubSubClient.h>
 #include "HTTPClient.h"
@@ -115,23 +115,16 @@ void reconnect()
 void setup_wifi()
 {
   delay(10);
-  // We start by connecting to a WiFi network
-  Serial.println();
-  Serial.print("Connecting to ");
-  Serial.println(ssid);
+  WiFiManager wm;
+     bool res;
+    res = wm.autoConnect("wifi_setup","password");
 
-  WiFi.begin(ssid, password);
-
-  while (WiFi.status() != WL_CONNECTED)
-  {
-    delay(500);
-    Serial.print(".");
-  }
-
-  Serial.println("");
-  Serial.println("WiFi connected");
-  Serial.println("IP address: ");
-  Serial.println(WiFi.localIP());
+    if(!res) {
+        Serial.println("Failed to connect");
+    } 
+    else {
+        Serial.println("connected");
+    }
 }
 
 void send_data_mqtt(int data)
@@ -271,6 +264,7 @@ void start_cycle()
       // Handle MQTT connection
       if (!client.connected())
       {
+        setup_wifi();
         reconnect();
       }
       client.loop();
@@ -388,7 +382,6 @@ void handleMessage(char *topic, byte *payload, unsigned int length)
     display.setCursor(0, 16);
     display.print(ip + ":1880/ui");
     display.display();
-
   }
 }
 
