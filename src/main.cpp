@@ -37,6 +37,7 @@ int set_min_temp;
 int set_min_hum;
 int set_max_temp;
 int set_max_hum;
+String ip;
 
 // Google Apps Script URL
 const String GOOGLE_APPS_SCRIPT_URL = "https://script.google.com/macros/s/";
@@ -46,6 +47,8 @@ int requestCounter = 0;
 int temp = 20;
 int hum = 30;
 int power;
+char value[8];
+int k = 0;
 
 void send_data_https()
 {
@@ -92,6 +95,7 @@ void reconnect()
       client.subscribe("stop");
       client.subscribe("maxTemperatuur");
       client.subscribe("maxHumidity");
+      client.subscribe("ip");
     }
     else
     {
@@ -168,8 +172,7 @@ void set_display(int t, int h)
   display.print(h);
   display.print(" %");
 
-
-    display.setTextSize(1);
+  display.setTextSize(1);
   display.setCursor(0, 40);
   display.print("progress: ");
   display.setTextSize(1);
@@ -187,9 +190,13 @@ void get_dht()
   hum = data.humidity;
   Serial.print("temperature: ");
   Serial.println(temp);
+  dtostrf(temp, 1, 2, value);
+  client.publish("tempIn", value);
 
   Serial.print("humidity: ");
   Serial.println(hum);
+  dtostrf(hum, 1, 2, value);
+  client.publish("humIn", value);
 
   set_display(temp, hum);
   send_data_https();
@@ -231,6 +238,7 @@ void start_relais()
 
 void start_cycle()
 {
+
   if (started)
   {
     intervalEnd = set_time * 60000;
@@ -259,7 +267,7 @@ void start_cycle()
     }
     while (started == true)
     {
-    
+
       // Handle MQTT connection
       if (!client.connected())
       {
@@ -277,6 +285,8 @@ void start_cycle()
       Serial.println(progress);
       progress /= set_time;
       Serial.println(progress);
+      dtostrf(progress, 1, 2, value);
+      client.publish("timeIn", value);
 
       if (currentMillis - previousMillis >= interval)
       {
@@ -284,7 +294,6 @@ void start_cycle()
 
         get_dht();
         start_relais();
-        
       }
       if (currentMillis - previousMillisEnd >= intervalEnd)
       {
@@ -341,7 +350,7 @@ void handleMessage(char *topic, byte *payload, unsigned int length)
   if (String(topic) == "maxHumidity")
   {
     set_max_hum = message.toInt();
-  } 
+  }
   if (String(topic) == "maxTemperatuur")
   {
     set_max_temp = message.toInt();
@@ -366,6 +375,20 @@ void handleMessage(char *topic, byte *payload, unsigned int length)
     set_min_hum = (i.substring(4, 6)).toInt();
     set_max_hum = (i.substring(6, 8)).toInt();
     set_time = (i.substring(8, 11)).toInt();
+  }
+  if (String(topic) == "ip")
+  {
+    String i = message;
+    ip = i;
+    display.clearDisplay();
+    display.setTextSize(2);
+    display.setCursor(0, 0);
+    display.print("dashboard: ");
+    display.setTextSize(1);
+    display.setCursor(0, 16);
+    display.print(ip + ":1880/ui");
+    display.display();
+
   }
 }
 
@@ -403,6 +426,13 @@ void loop()
     reconnect();
   }
   client.loop();
+
+  if (k < 1)
+  {
+    Serial.println("ip request");
+    client.publish("getIp", "true");
+    k += 1;
+  }
 
   start_cycle();
 }

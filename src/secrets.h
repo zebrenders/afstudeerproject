@@ -2,11 +2,13 @@
 // Replace the next variables with your SSID/Password combination
 // const char *ssid = "neno";
 // const char *password = "96604yks";
-const char *ssid = "IoT";
-const char *password = "KdGIoT83!";
+// const char *ssid = "IoT";
+// const char *password = "KdGIoT83!";
+const char *ssid = "WIFI_ZEB";
+const char *password = "PASSWORD123123";
 
 // Add your MQTT Broker IP address, example:
-const char *mqtt_server = "10.6.121.201";
+const char *mqtt_server = "10.205.1.80";
 
 
 
