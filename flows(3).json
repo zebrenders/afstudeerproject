@@ -1,0 +1,748 @@
+[
+    {
+        "id": "5a5948fd93e5f366",
+        "type": "tab",
+        "label": "Flow 4",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "61c9f606e0e52a40",
+        "type": "ui_text_input",
+        "z": "5a5948fd93e5f366",
+        "name": "Label Input",
+        "label": "Label",
+        "group": "dashboard_group",
+        "order": 2,
+        "width": 0,
+        "height": 0,
+        "passthru": true,
+        "mode": "text",
+        "delay": 300,
+        "topic": "",
+        "x": 130,
+        "y": 220,
+        "wires": [
+            [
+                "9b6f78c58e6ea7dd"
+            ]
+        ]
+    },
+    {
+        "id": "9c0ac3d97418292f",
+        "type": "ui_button",
+        "z": "5a5948fd93e5f366",
+        "name": "",
+        "group": "dashboard_group",
+        "order": 3,
+        "width": 0,
+        "height": 0,
+        "passthru": false,
+        "label": "Add to Dropdown",
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "",
+        "icon": "",
+        "payload": "",
+        "payloadType": "str",
+        "topic": "",
+        "x": 130,
+        "y": 280,
+        "wires": [
+            [
+                "af3172f3d430c25d"
+            ]
+        ]
+    },
+    {
+        "id": "9b6f78c58e6ea7dd",
+        "type": "function",
+        "z": "5a5948fd93e5f366",
+        "name": "Buffer Label",
+        "func": "flow.set('tempLabel', msg.payload);\nreturn null;",
+        "outputs": 0,
+        "noerr": 0,
+        "x": 360,
+        "y": 220,
+        "wires": []
+    },
+    {
+        "id": "af3172f3d430c25d",
+        "type": "function",
+        "z": "5a5948fd93e5f366",
+        "name": "Add to Dropdown",
+        "func": "// Get current list or initialize\nlet list = flow.get('dropdownList') || [];\n\nlet minTemp = flow.get('minTemp');\nlet maxTemp = flow.get('maxTemp');\nlet minHum = flow.get('minHum');\nlet maxHum = flow.get('maxHum');\nlet tijd = flow.get('tijd');\nlet val = minTemp + maxTemp + minHum + maxHum + tijd;\nlet label = flow.get('tempLabel');\n\nif (val && label) {\n    node.warn('debug functions');\n    node.warn(val);\n    node.warn(label);\n\n    // Check if value already exists\n    let exists = list.some(item => item[label] === val);\n    if (!exists) {\n        node.warn(\"doesn't exist\");\n        node.warn(list);\n\n        // Use object, not array\n        const object = {};\n        object[label] = val;\n\n        list.push(object);\n        node.warn(list);\n\n        flow.set('dropdownList', list);\n        msg.options = list;\n        return [msg];\n    }\n}\n\nreturn null;\n",
+        "outputs": 1,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 370,
+        "y": 280,
+        "wires": [
+            [
+                "7780aa9851b08fe9",
+                "bc5e36e2b11c046e",
+                "a6cee56706f97bad"
+            ]
+        ]
+    },
+    {
+        "id": "7780aa9851b08fe9",
+        "type": "ui_dropdown",
+        "z": "5a5948fd93e5f366",
+        "name": "Dynamic Dropdown",
+        "label": "",
+        "tooltip": "",
+        "place": "Select option",
+        "group": "0e457fce4f3ceeb8",
+        "order": 1,
+        "width": 0,
+        "height": 0,
+        "passthru": true,
+        "multiple": false,
+        "options": [],
+        "payload": "",
+        "topic": "",
+        "topicType": "str",
+        "className": "",
+        "x": 890,
+        "y": 280,
+        "wires": [
+            [
+                "f9f89bc5eefc0ec5",
+                "5c4e4c05b1586b3c"
+            ]
+        ]
+    },
+    {
+        "id": "f9f89bc5eefc0ec5",
+        "type": "debug",
+        "z": "5a5948fd93e5f366",
+        "name": "debug 9",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1140,
+        "y": 340,
+        "wires": []
+    },
+    {
+        "id": "59c23b9dfffbb0a1",
+        "type": "ui_text_input",
+        "z": "5a5948fd93e5f366",
+        "name": "Value Input",
+        "label": "tijd",
+        "tooltip": "",
+        "group": "dashboard_group",
+        "order": 1,
+        "width": 0,
+        "height": 0,
+        "passthru": true,
+        "mode": "text",
+        "delay": 300,
+        "topic": "",
+        "sendOnBlur": true,
+        "className": "",
+        "topicType": "str",
+        "x": 130,
+        "y": 160,
+        "wires": [
+            [
+                "f47511275a541d7f"
+            ]
+        ]
+    },
+    {
+        "id": "f47511275a541d7f",
+        "type": "function",
+        "z": "5a5948fd93e5f366",
+        "name": "Buffer Value",
+        "func": "flow.set('tijd', msg.payload);\nreturn null;",
+        "outputs": 0,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 330,
+        "y": 160,
+        "wires": []
+    },
+    {
+        "id": "57c31f77a7cd9080",
+        "type": "function",
+        "z": "5a5948fd93e5f366",
+        "name": "Buffer Value",
+        "func": "flow.set('maxTemp', msg.payload);\nreturn null;",
+        "outputs": 0,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 330,
+        "y": 120,
+        "wires": []
+    },
+    {
+        "id": "5e64bf9dd4459808",
+        "type": "ui_text_input",
+        "z": "5a5948fd93e5f366",
+        "name": "Value Input",
+        "label": "maximum temperatuur",
+        "tooltip": "",
+        "group": "dashboard_group",
+        "order": 1,
+        "width": 0,
+        "height": 0,
+        "passthru": true,
+        "mode": "text",
+        "delay": 300,
+        "topic": "",
+        "sendOnBlur": true,
+        "className": "",
+        "topicType": "str",
+        "x": 130,
+        "y": 120,
+        "wires": [
+            [
+                "57c31f77a7cd9080"
+            ]
+        ]
+    },
+    {
+        "id": "aa7770a2bfe85b98",
+        "type": "function",
+        "z": "5a5948fd93e5f366",
+        "name": "Buffer Value",
+        "func": "flow.set('minTemp', msg.payload);\nreturn null;",
+        "outputs": 0,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 330,
+        "y": 80,
+        "wires": []
+    },
+    {
+        "id": "cedb6dccc350616d",
+        "type": "ui_text_input",
+        "z": "5a5948fd93e5f366",
+        "name": "Value Input",
+        "label": "Minimun temperatuur",
+        "tooltip": "",
+        "group": "dashboard_group",
+        "order": 1,
+        "width": 0,
+        "height": 0,
+        "passthru": true,
+        "mode": "text",
+        "delay": 300,
+        "topic": "",
+        "sendOnBlur": true,
+        "className": "",
+        "topicType": "str",
+        "x": 130,
+        "y": 80,
+        "wires": [
+            [
+                "aa7770a2bfe85b98"
+            ]
+        ]
+    },
+    {
+        "id": "f38e9fe3ad179bee",
+        "type": "function",
+        "z": "5a5948fd93e5f366",
+        "name": "Buffer Value",
+        "func": "flow.set('minHum', msg.payload);\nreturn null;",
+        "outputs": 0,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 690,
+        "y": 80,
+        "wires": []
+    },
+    {
+        "id": "f8fe43742155ce38",
+        "type": "ui_text_input",
+        "z": "5a5948fd93e5f366",
+        "name": "Value Input",
+        "label": "minimum humidity",
+        "tooltip": "",
+        "group": "dashboard_group",
+        "order": 1,
+        "width": 0,
+        "height": 0,
+        "passthru": true,
+        "mode": "text",
+        "delay": 300,
+        "topic": "",
+        "sendOnBlur": true,
+        "className": "",
+        "topicType": "str",
+        "x": 490,
+        "y": 80,
+        "wires": [
+            [
+                "f38e9fe3ad179bee"
+            ]
+        ]
+    },
+    {
+        "id": "20722c3551e04f69",
+        "type": "function",
+        "z": "5a5948fd93e5f366",
+        "name": "Buffer Value",
+        "func": "flow.set('maxHum', msg.payload);\nreturn null;",
+        "outputs": 0,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 690,
+        "y": 120,
+        "wires": []
+    },
+    {
+        "id": "9eb39487159ad019",
+        "type": "ui_text_input",
+        "z": "5a5948fd93e5f366",
+        "name": "Value Input",
+        "label": "maximum humidity",
+        "tooltip": "",
+        "group": "dashboard_group",
+        "order": 1,
+        "width": 0,
+        "height": 0,
+        "passthru": true,
+        "mode": "text",
+        "delay": 300,
+        "topic": "",
+        "sendOnBlur": true,
+        "className": "",
+        "topicType": "str",
+        "x": 490,
+        "y": 120,
+        "wires": [
+            [
+                "20722c3551e04f69"
+            ]
+        ]
+    },
+    {
+        "id": "5c4e4c05b1586b3c",
+        "type": "mqtt out",
+        "z": "5a5948fd93e5f366",
+        "name": "",
+        "topic": "testTopic",
+        "qos": "",
+        "retain": "",
+        "respTopic": "",
+        "contentType": "",
+        "userProps": "",
+        "correl": "",
+        "expiry": "",
+        "broker": "7fb34d1e48cd54e3",
+        "x": 1140,
+        "y": 280,
+        "wires": []
+    },
+    {
+        "id": "5d97847fc7ef1a3d",
+        "type": "mqtt in",
+        "z": "5a5948fd93e5f366",
+        "name": "",
+        "topic": "testTopic",
+        "qos": "2",
+        "datatype": "auto-detect",
+        "broker": "7fb34d1e48cd54e3",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 860,
+        "y": 420,
+        "wires": [
+            [
+                "427230cc38c609fa"
+            ]
+        ]
+    },
+    {
+        "id": "427230cc38c609fa",
+        "type": "debug",
+        "z": "5a5948fd93e5f366",
+        "name": "debug 11",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1040,
+        "y": 420,
+        "wires": []
+    },
+    {
+        "id": "39380940ec0d9179",
+        "type": "function",
+        "z": "5a5948fd93e5f366",
+        "name": "clear list",
+        "func": "let list = flow.get('dropdownList') || [];\nnode.warn(list);\nlist = [];\nnode.warn(list);\nflow.set('dropdownList', list);\nmsg.options = list;\nreturn [msg];\n",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 360,
+        "y": 540,
+        "wires": [
+            [
+                "0ee8f5a9bc9becb5"
+            ]
+        ]
+    },
+    {
+        "id": "45c15f9f9a62ca00",
+        "type": "inject",
+        "z": "5a5948fd93e5f366",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "true",
+        "payloadType": "bool",
+        "x": 110,
+        "y": 580,
+        "wires": [
+            [
+                "39380940ec0d9179"
+            ]
+        ]
+    },
+    {
+        "id": "0ee8f5a9bc9becb5",
+        "type": "function",
+        "z": "5a5948fd93e5f366",
+        "name": "show list",
+        "func": "let list = flow.get('dropdownList') || [];\nflow.set('dropdownList', list);\nmsg.options = list;\nreturn [msg];",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 520,
+        "y": 540,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "4b6e955cb3eed0cd",
+        "type": "ui_button",
+        "z": "5a5948fd93e5f366",
+        "name": "",
+        "group": "13d439eac857e67b",
+        "order": 0,
+        "width": 0,
+        "height": 0,
+        "passthru": false,
+        "label": "Clear dropdown menu",
+        "tooltip": "",
+        "color": "",
+        "bgcolor": "",
+        "className": "",
+        "icon": "",
+        "payload": "",
+        "payloadType": "str",
+        "topic": "topic",
+        "topicType": "msg",
+        "x": 140,
+        "y": 500,
+        "wires": [
+            [
+                "39380940ec0d9179"
+            ]
+        ]
+    },
+    {
+        "id": "fe5f6436685573cc",
+        "type": "debug",
+        "z": "5a5948fd93e5f366",
+        "name": "debug 7",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 900,
+        "y": 340,
+        "wires": []
+    },
+    {
+        "id": "bc5e36e2b11c046e",
+        "type": "debug",
+        "z": "5a5948fd93e5f366",
+        "name": "debug 10",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 620,
+        "y": 160,
+        "wires": []
+    },
+    {
+        "id": "48782b6ece6dc2c4",
+        "type": "debug",
+        "z": "5a5948fd93e5f366",
+        "name": "debug 8",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1100,
+        "y": 220,
+        "wires": []
+    },
+    {
+        "id": "a0756d8afced64f5",
+        "type": "debug",
+        "z": "5a5948fd93e5f366",
+        "name": "debug 12",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 820,
+        "y": 160,
+        "wires": []
+    },
+    {
+        "id": "1efe6568294d803f",
+        "type": "file",
+        "z": "5a5948fd93e5f366",
+        "name": "Write Dropdown to File",
+        "filename": "dropdown.json",
+        "filenameType": "str",
+        "appendNewline": false,
+        "createDir": true,
+        "overwriteFile": "true",
+        "encoding": "utf8",
+        "x": 860,
+        "y": 220,
+        "wires": [
+            [
+                "48782b6ece6dc2c4"
+            ]
+        ]
+    },
+    {
+        "id": "a6cee56706f97bad",
+        "type": "function",
+        "z": "5a5948fd93e5f366",
+        "name": "save data",
+        "func": "let list = flow.get(\"dropdownList\") || [];\n\n// If msg.payload is an array, flatten it (or take just the first element if needed)\nlet newItem = Array.isArray(msg.payload) ? msg.payload[0] : msg.payload;\n\nif (newItem && !list.includes(newItem)) {\n    list.push(newItem);\n    flow.set(\"dropdownList\", list);\n}\n\nmsg.payload = list;\nreturn msg;\n",
+        "outputs": 1,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 620,
+        "y": 220,
+        "wires": [
+            [
+                "1efe6568294d803f",
+                "a0756d8afced64f5"
+            ]
+        ]
+    },
+    {
+        "id": "aabf7f3776481694",
+        "type": "file in",
+        "z": "5a5948fd93e5f366",
+        "name": "Read Dropdown from File",
+        "filename": "dropdown.json",
+        "filenameType": "str",
+        "format": "utf8",
+        "chunk": false,
+        "sendError": false,
+        "encoding": "none",
+        "allProps": false,
+        "x": 390,
+        "y": 340,
+        "wires": [
+            [
+                "ed8d3e1d27d9aa49"
+            ]
+        ]
+    },
+    {
+        "id": "ed8d3e1d27d9aa49",
+        "type": "function",
+        "z": "5a5948fd93e5f366",
+        "name": "Parse and Set Flow Data",
+        "func": "try {\n    let list = JSON.parse(msg.payload);\n    flow.set(\"dropdownList\", list);\n    msg.options = list;\n    return msg;\n} catch (e) {\n    node.error(\"Failed to parse dropdown list\", e);\n    return null;\n}",
+        "outputs": 1,
+        "x": 630,
+        "y": 340,
+        "wires": [
+            [
+                "7780aa9851b08fe9",
+                "fe5f6436685573cc"
+            ]
+        ]
+    },
+    {
+        "id": "089ad14a2086c6ba",
+        "type": "inject",
+        "z": "5a5948fd93e5f366",
+        "name": "Load Dropdown from File",
+        "props": [
+            {
+                "p": "payload"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": true,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "x": 150,
+        "y": 340,
+        "wires": [
+            [
+                "aabf7f3776481694"
+            ]
+        ]
+    },
+    {
+        "id": "dashboard_group",
+        "type": "ui_group",
+        "name": "Dropdown Controls",
+        "tab": "dashboard_tab",
+        "order": 1,
+        "disp": true,
+        "width": "6",
+        "collapse": false,
+        "className": ""
+    },
+    {
+        "id": "0e457fce4f3ceeb8",
+        "type": "ui_group",
+        "name": "dashboard",
+        "tab": "115b628d0aafce83",
+        "order": 1,
+        "disp": true,
+        "width": 6,
+        "collapse": false,
+        "className": ""
+    },
+    {
+        "id": "7fb34d1e48cd54e3",
+        "type": "mqtt-broker",
+        "name": "",
+        "broker": "localhost",
+        "port": "1881",
+        "clientid": "",
+        "autoConnect": true,
+        "usetls": false,
+        "protocolVersion": 4,
+        "keepalive": 60,
+        "cleansession": true,
+        "autoUnsubscribe": true,
+        "birthTopic": "",
+        "birthQos": "0",
+        "birthRetain": "false",
+        "birthPayload": "",
+        "birthMsg": {},
+        "closeTopic": "",
+        "closeQos": "0",
+        "closeRetain": "false",
+        "closePayload": "",
+        "closeMsg": {},
+        "willTopic": "",
+        "willQos": "0",
+        "willRetain": "false",
+        "willPayload": "",
+        "willMsg": {},
+        "userProps": "",
+        "sessionExpiry": ""
+    },
+    {
+        "id": "13d439eac857e67b",
+        "type": "ui_group",
+        "name": "Clear dropdown",
+        "tab": "f1211cf119ebc4b4",
+        "order": 1,
+        "disp": true,
+        "width": 6,
+        "collapse": false,
+        "className": ""
+    },
+    {
+        "id": "dashboard_tab",
+        "type": "ui_tab",
+        "name": "Dropdown Builder",
+        "icon": "dashboard",
+        "order": 1
+    },
+    {
+        "id": "115b628d0aafce83",
+        "type": "ui_tab",
+        "name": "Home",
+        "icon": "dashboard",
+        "disabled": false,
+        "hidden": false
+    },
+    {
+        "id": "f1211cf119ebc4b4",
+        "type": "ui_tab",
+        "name": "Clear dropdown",
+        "icon": "dashboard",
+        "disabled": false,
+        "hidden": false
+    }
+]

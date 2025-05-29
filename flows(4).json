@@ -1,0 +1,452 @@
+[
+    {
+        "id": "a054df9f230d450b",
+        "type": "tab",
+        "label": "Flow 2",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "fe7d5361ea93a650",
+        "type": "mqtt in",
+        "z": "a054df9f230d450b",
+        "name": "",
+        "topic": "tempIn",
+        "qos": "2",
+        "datatype": "auto-detect",
+        "broker": "7fb34d1e48cd54e3",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 90,
+        "y": 180,
+        "wires": [
+            [
+                "d1462b4541480702",
+                "a92d7d7526b02b37"
+            ]
+        ]
+    },
+    {
+        "id": "28afaa7dfcbd819a",
+        "type": "mqtt in",
+        "z": "a054df9f230d450b",
+        "name": "",
+        "topic": "humIn",
+        "qos": "2",
+        "datatype": "auto-detect",
+        "broker": "7fb34d1e48cd54e3",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 90,
+        "y": 240,
+        "wires": [
+            [
+                "b666bf8470cfd8c4",
+                "a92d7d7526b02b37"
+            ]
+        ]
+    },
+    {
+        "id": "6db6992df2cd718a",
+        "type": "mqtt in",
+        "z": "a054df9f230d450b",
+        "name": "",
+        "topic": "timeIn",
+        "qos": "2",
+        "datatype": "auto-detect",
+        "broker": "7fb34d1e48cd54e3",
+        "nl": false,
+        "rap": true,
+        "rh": 0,
+        "inputs": 0,
+        "x": 90,
+        "y": 300,
+        "wires": [
+            [
+                "4b2e6d9f87fa45ae"
+            ]
+        ]
+    },
+    {
+        "id": "d1462b4541480702",
+        "type": "ui_gauge",
+        "z": "a054df9f230d450b",
+        "name": "",
+        "group": "1a59ee4770a347f7",
+        "order": 1,
+        "width": 6,
+        "height": 4,
+        "gtype": "gage",
+        "title": "temperature",
+        "label": "C°",
+        "format": "{{value}}",
+        "min": 0,
+        "max": "100",
+        "colors": [
+            "#00b500",
+            "#e6e600",
+            "#ca3838"
+        ],
+        "seg1": "",
+        "seg2": "",
+        "diff": false,
+        "className": "",
+        "x": 390,
+        "y": 180,
+        "wires": []
+    },
+    {
+        "id": "b666bf8470cfd8c4",
+        "type": "ui_gauge",
+        "z": "a054df9f230d450b",
+        "name": "",
+        "group": "1a59ee4770a347f7",
+        "order": 3,
+        "width": 6,
+        "height": 4,
+        "gtype": "gage",
+        "title": "humidity",
+        "label": "%",
+        "format": "{{value}}",
+        "min": 0,
+        "max": "100",
+        "colors": [
+            "#00b500",
+            "#e6e600",
+            "#ca3838"
+        ],
+        "seg1": "",
+        "seg2": "",
+        "diff": false,
+        "className": "",
+        "x": 380,
+        "y": 240,
+        "wires": []
+    },
+    {
+        "id": "a92d7d7526b02b37",
+        "type": "ui_chart",
+        "z": "a054df9f230d450b",
+        "name": "",
+        "group": "1a59ee4770a347f7",
+        "order": 7,
+        "width": 0,
+        "height": 0,
+        "label": "chart",
+        "chartType": "line",
+        "legend": "true",
+        "xformat": "auto",
+        "interpolate": "linear",
+        "nodata": "",
+        "dot": true,
+        "ymin": "0",
+        "ymax": "100",
+        "removeOlder": "24",
+        "removeOlderPoints": "",
+        "removeOlderUnit": "3600",
+        "cutout": 0,
+        "useOneColor": false,
+        "useUTC": false,
+        "colors": [
+            "#1f77b4",
+            "#aec7e8",
+            "#ff7f0e",
+            "#2ca02c",
+            "#98df8a",
+            "#d62728",
+            "#ff9896",
+            "#9467bd",
+            "#c5b0d5"
+        ],
+        "outputs": 1,
+        "useDifferentColor": false,
+        "className": "",
+        "x": 550,
+        "y": 120,
+        "wires": [
+            [
+                "71ae8834fa583cd0"
+            ]
+        ]
+    },
+    {
+        "id": "4b2e6d9f87fa45ae",
+        "type": "ui_text",
+        "z": "a054df9f230d450b",
+        "group": "1a59ee4770a347f7",
+        "order": 4,
+        "width": 6,
+        "height": 1,
+        "name": "",
+        "label": "progress",
+        "format": "{{msg.payload}} %",
+        "layout": "col-center",
+        "className": "",
+        "style": true,
+        "font": "",
+        "fontSize": 16,
+        "color": "#000000",
+        "x": 380,
+        "y": 300,
+        "wires": []
+    },
+    {
+        "id": "71ae8834fa583cd0",
+        "type": "file",
+        "z": "a054df9f230d450b",
+        "name": "Save Chart Data",
+        "filename": "example.json",
+        "filenameType": "str",
+        "appendNewline": false,
+        "createDir": false,
+        "overwriteFile": "true",
+        "encoding": "none",
+        "x": 760,
+        "y": 120,
+        "wires": [
+            [
+                "3f2d0345532e6f30"
+            ]
+        ]
+    },
+    {
+        "id": "e0ffaa21def7a36a",
+        "type": "inject",
+        "z": "a054df9f230d450b",
+        "name": "Load Chart on Start",
+        "props": [],
+        "repeat": "",
+        "crontab": "",
+        "once": true,
+        "onceDelay": "0.5",
+        "topic": "",
+        "x": 140,
+        "y": 420,
+        "wires": [
+            [
+                "319e91b4c9cd222e"
+            ]
+        ]
+    },
+    {
+        "id": "319e91b4c9cd222e",
+        "type": "file in",
+        "z": "a054df9f230d450b",
+        "name": "Load from JSON",
+        "filename": "example.json",
+        "filenameType": "str",
+        "format": "utf8",
+        "chunk": false,
+        "sendError": false,
+        "encoding": "none",
+        "allProps": false,
+        "x": 390,
+        "y": 420,
+        "wires": [
+            [
+                "aa533375af26c7d2",
+                "03265415820f895d"
+            ]
+        ]
+    },
+    {
+        "id": "aa533375af26c7d2",
+        "type": "function",
+        "z": "a054df9f230d450b",
+        "name": "Parse JSON for Chart",
+        "func": "// Ensure it's parsed as JSON\nlet parsed = msg.payload;\n\nif (typeof parsed === \"string\") {\n    parsed = JSON.parse(parsed);\n}\n\n// Don't unwrap if it's an array\nmsg.payload = parsed;\nreturn msg;\n",
+        "outputs": 1,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 560,
+        "y": 340,
+        "wires": [
+            [
+                "7b8ed08e094b6d37",
+                "a92d7d7526b02b37"
+            ]
+        ]
+    },
+    {
+        "id": "7b8ed08e094b6d37",
+        "type": "debug",
+        "z": "a054df9f230d450b",
+        "name": "debug 14",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 820,
+        "y": 340,
+        "wires": []
+    },
+    {
+        "id": "03265415820f895d",
+        "type": "debug",
+        "z": "a054df9f230d450b",
+        "name": "debug 15",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 640,
+        "y": 420,
+        "wires": []
+    },
+    {
+        "id": "3f2d0345532e6f30",
+        "type": "debug",
+        "z": "a054df9f230d450b",
+        "name": "debug 16",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 980,
+        "y": 120,
+        "wires": []
+    },
+    {
+        "id": "c42c582c88720686",
+        "type": "file",
+        "z": "a054df9f230d450b",
+        "name": "Save Chart Data",
+        "filename": "example.json",
+        "filenameType": "str",
+        "appendNewline": false,
+        "createDir": false,
+        "overwriteFile": "delete",
+        "encoding": "none",
+        "x": 1120,
+        "y": 280,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "d77d04febb1e5680",
+        "type": "inject",
+        "z": "a054df9f230d450b",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "str",
+        "x": 890,
+        "y": 260,
+        "wires": [
+            [
+                "c42c582c88720686"
+            ]
+        ]
+    },
+    {
+        "id": "206ce2deeb2368a5",
+        "type": "ui_spacer",
+        "z": "a054df9f230d450b",
+        "name": "spacer",
+        "group": "1a59ee4770a347f7",
+        "order": 2,
+        "width": 6,
+        "height": 1
+    },
+    {
+        "id": "cc132b5d8d32bc51",
+        "type": "ui_spacer",
+        "z": "a054df9f230d450b",
+        "name": "spacer",
+        "group": "1a59ee4770a347f7",
+        "order": 5,
+        "width": 6,
+        "height": 1
+    },
+    {
+        "id": "a4e9c4dc6f11527d",
+        "type": "ui_spacer",
+        "z": "a054df9f230d450b",
+        "name": "spacer",
+        "group": "1a59ee4770a347f7",
+        "order": 6,
+        "width": 6,
+        "height": 1
+    },
+    {
+        "id": "7fb34d1e48cd54e3",
+        "type": "mqtt-broker",
+        "name": "",
+        "broker": "localhost",
+        "port": "1881",
+        "clientid": "",
+        "autoConnect": true,
+        "usetls": false,
+        "protocolVersion": 4,
+        "keepalive": 60,
+        "cleansession": true,
+        "autoUnsubscribe": true,
+        "birthTopic": "",
+        "birthQos": "0",
+        "birthRetain": "false",
+        "birthPayload": "",
+        "birthMsg": {},
+        "closeTopic": "",
+        "closeQos": "0",
+        "closeRetain": "false",
+        "closePayload": "",
+        "closeMsg": {},
+        "willTopic": "",
+        "willQos": "0",
+        "willRetain": "false",
+        "willPayload": "",
+        "willMsg": {},
+        "userProps": "",
+        "sessionExpiry": ""
+    },
+    {
+        "id": "1a59ee4770a347f7",
+        "type": "ui_group",
+        "name": "data",
+        "tab": "26632b8826578a76",
+        "order": 1,
+        "disp": true,
+        "width": 18,
+        "collapse": false,
+        "className": ""
+    },
+    {
+        "id": "26632b8826578a76",
+        "type": "ui_tab",
+        "name": "data",
+        "icon": "",
+        "disabled": false,
+        "hidden": false
+    }
+]
