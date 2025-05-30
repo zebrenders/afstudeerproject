@@ -326,13 +326,10 @@ void handleMessage(char *topic, byte *payload, unsigned int length)
   display.clearDisplay();
   display.setTextSize(1);
   display.setCursor(0, 20);
-  display.print("Received message");
+  display.print("Received message:");
   display.setTextSize(1);
   display.setCursor(0, 30);
-  display.print("on topic");
-  display.setTextSize(1);
-  display.setCursor(0, 40);
-  display.print("[" + String(topic) + "]: " + message);
+  display.print('"' + String(topic) + ": " + message + '"');
   display.display();
 
   if (String(topic) == "temperatuur")
@@ -380,9 +377,9 @@ void handleMessage(char *topic, byte *payload, unsigned int length)
     display.setTextSize(2);
     display.setCursor(0, 0);
     display.print("dashboard: ");
-    display.setTextSize(1);
+    display.setTextSize(2);
     display.setCursor(0, 16);
-    display.print(ip + ":1880/ui");
+    display.print(String(mqtt_server) + ":1880/ui");
     display.display();
   }
 }
