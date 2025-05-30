@@ -77,9 +77,26 @@ void send_data_https()
   http.end();
 }
 
+void setup_wifi()
+{
+  delay(10);
+  WiFiManager wm;
+  bool res;
+  res = wm.autoConnect("wifi_setup", "password");
+
+  if (!res)
+  {
+    Serial.println("Failed to connect");
+  }
+  else
+  {
+    Serial.println("connected");
+  }
+}
 // MQTT reconnect function
 void reconnect()
 {
+  setup_wifi();
   int i = 0;
   while (!client.connected())
   {
@@ -110,21 +127,6 @@ void reconnect()
       delay(5000);
     }
   }
-}
-
-void setup_wifi()
-{
-  delay(10);
-  WiFiManager wm;
-     bool res;
-    res = wm.autoConnect("wifi_setup","password");
-
-    if(!res) {
-        Serial.println("Failed to connect");
-    } 
-    else {
-        Serial.println("connected");
-    }
 }
 
 void send_data_mqtt(int data)
