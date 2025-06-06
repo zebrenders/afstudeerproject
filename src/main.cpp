@@ -2,7 +2,6 @@
 #include <WiFiManager.h>            // For automatic Wi-Fi configuration
 #include <AsyncTCP.h>
 #include <PubSubClient.h>           // For MQTT communication
-#include "HTTPClient.h"             // For HTTP requests
 #include <DHTesp.h>                 // For reading DHT sensor
 #include <secrets.h>                // Contains secrets like MQTT server and script ID
 #include <Adafruit_SSD1306.h>       // OLED display library
@@ -41,7 +40,7 @@ int set_max_temp;
 int set_max_hum;
 String ip;
 
-const String GOOGLE_APPS_SCRIPT_URL = "https://script.google.com/macros/s/";
+
 
 // Variables for sensor data and control
 int requestCounter = 0;
@@ -50,26 +49,6 @@ int hum = 30;
 int power;
 char value[8];
 int k = 0;
-
-// Send temperature and humidity to Google Sheets
-void send_data_https()
-{
-  requestCounter += 1;
-  String urlFinal = GOOGLE_APPS_SCRIPT_URL + GOOGLE_SCRIPT_MACRO_ID +
-                    "/exec?tijdstip=" + String(requestCounter) +
-                    "&temperatuur=" + String(temp) +
-                    "&humidity=" + String(hum);
-
-  HTTPClient http;
-  http.begin(urlFinal.c_str());
-  int httpCode = http.GET();                 // Send HTTP GET request
-  Serial.print("HTTP Status Code: ");
-  Serial.println(httpCode);
-  if (httpCode > 0) {
-    String payload = http.getString();       // Read response payload
-  }
-  http.end();
-}
 
 // Connect to Wi-Fi using WiFiManager
 void setup_wifi()
@@ -152,7 +131,7 @@ void set_display(int t, int h)
   display.display();
 }
 
-// Read sensor data, send via MQTT and HTTP, update display
+// Read sensor data, send via MQTT, update display
 void get_dht()
 {
   TempAndHumidity data = dht.getTempAndHumidity();
@@ -169,7 +148,6 @@ void get_dht()
   client.publish("humIn", value);
 
   set_display(temp, hum);
-  send_data_https();
 }
 
 // Control relays based on temperature and humidity
